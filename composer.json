@@ -1,0 +1,20 @@
+{
+    "name": "gecko-packages/gecko-bson-file-iterator",
+    "type": "library",
+    "homepage": "https://github.com/GeckoPackages",
+    "description": "BSON file iterator.",
+    "license": "MIT",
+    "keywords": ["BSON", "Iterator"],
+    "require": {
+        "php": "^5.6.0 || >=7.0 <7.2",
+        "mongodb/mongodb": "^1.0.0"
+    },
+    "require-dev": {
+        "gecko-packages/gecko-php-unit" : "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "GeckoPackages\\Bson\\": "src\\Bson"
+        }
+    }
+}
