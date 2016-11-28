@@ -9,6 +9,8 @@
  * with this source code in the file LICENSE.
  */
 
+declare(strict_types=1);
+
 namespace GeckoPackages\Bson;
 
 /**
@@ -64,14 +66,14 @@ final class BsonFileIterator implements \Iterator
      */
     public function __construct(
         $file,
-        $constructType = 1,
-        $maxUnpackSize = 5242880, // 5*1024*1024 bytes
-        $jsonDecodeMaxDepth = 512,
-        $jsonDecodeOptions = 0
+        int $constructType = 1,
+        int $maxUnpackSize = 5242880, // 5*1024*1024 bytes
+        int $jsonDecodeMaxDepth = 512,
+        int $jsonDecodeOptions = 0
     ) {
         $this->resolveFileHandle($file);
         $this->resolveDecoder($constructType, $jsonDecodeMaxDepth, $jsonDecodeOptions);
-        $this->resolveMaxUnpackSize($maxUnpackSize, $file);
+        $this->resolveMaxUnpackSize($maxUnpackSize, $file instanceof \SplFileInfo ? $file->getPathname() : $file);
     }
 
     public function __destruct()
@@ -183,16 +185,8 @@ final class BsonFileIterator implements \Iterator
         $this->fileHandle = $fileHandle;
     }
 
-    private function resolveDecoder($constructType, $jsonDecodeMaxDepth, $jsonDecodeOptions)
+    private function resolveDecoder(int $constructType, int $jsonDecodeMaxDepth, int $jsonDecodeOptions)
     {
-        if (!is_int($constructType)) {
-            throw new \InvalidArgumentException(sprintf(
-                'Construct type must be any of integers "%s" got "%s".',
-                implode(', ', [self::CONSTRUCT_JSON, self::CONSTRUCT_ARRAY, self::CONSTRUCT_STD]),
-                is_object($constructType) ? get_class($constructType) : gettype($constructType).(is_resource($constructType) ? '' : '#'.$constructType)
-            ));
-        }
-
         switch ($constructType) {
             case self::CONSTRUCT_JSON:
                 $this->decoder = function ($key, $content) {
@@ -215,17 +209,10 @@ final class BsonFileIterator implements \Iterator
                 ));
         }
 
-        if (!is_int($jsonDecodeMaxDepth) || $jsonDecodeMaxDepth < 1) {
+        if ($jsonDecodeMaxDepth < 1) {
             throw new \InvalidArgumentException(sprintf(
                 'Expected integer > 0 for JSON decode max depth, got "%s".',
                 is_object($jsonDecodeMaxDepth) ? get_class($jsonDecodeMaxDepth) : gettype($jsonDecodeMaxDepth).(is_resource($jsonDecodeMaxDepth) ? '' : '#'.$jsonDecodeMaxDepth)
-            ));
-        }
-
-        if (!is_int($jsonDecodeOptions)) {
-            throw new \InvalidArgumentException(sprintf(
-                'Expected integer for JSON decode options, got "%s".',
-                is_object($jsonDecodeOptions) ? get_class($jsonDecodeOptions) : gettype($jsonDecodeOptions).(is_resource($jsonDecodeOptions) ? '' : '#'.$jsonDecodeOptions)
             ));
         }
 
@@ -245,9 +232,9 @@ final class BsonFileIterator implements \Iterator
      *
      * @throws \InvalidArgumentException
      */
-    private function resolveMaxUnpackSize($maxUnpackSize, $file)
+    private function resolveMaxUnpackSize(int $maxUnpackSize, string $file)
     {
-        if (!is_int($maxUnpackSize) || $maxUnpackSize <= 0) {
+        if ($maxUnpackSize <= 0) {
             throw new \InvalidArgumentException(sprintf(
                 'Expected integer > 0 for max. unpack size, got "%s".',
                 is_object($maxUnpackSize) ? get_class($maxUnpackSize) : gettype($maxUnpackSize).(is_resource($maxUnpackSize) ? '' : '#'.$maxUnpackSize)

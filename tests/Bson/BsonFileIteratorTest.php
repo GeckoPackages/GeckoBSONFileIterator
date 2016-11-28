@@ -193,29 +193,11 @@ final class BsonFileIteratorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessageRegExp #^Construct type must be any of integers \"1, 2, 3\" got \"stdClass\".$#
-     */
-    public function testIteratorInvalidConstructionOtherType()
-    {
-        new BsonFileIterator($this->getAssetDir().'test.bson', new \stdClass());
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
      * @expectedExceptionMessageRegExp #^Construct type must be any of integers \"1, 2, 3\" got \"777\".$#
      */
     public function testIteratorInvalidConstructionValueInt()
     {
         new BsonFileIterator($this->getAssetDir().'test.bson', 777);
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessageRegExp #^Construct type must be any of integers \"1, 2, 3\" got \"NULL\#\".$#
-     */
-    public function testIteratorInvalidConstructionValueNull()
-    {
-        new BsonFileIterator($this->getAssetDir().'test.bson', null);
     }
 
     /**
@@ -276,21 +258,6 @@ final class BsonFileIteratorTest extends \PHPUnit_Framework_TestCase
             BsonFileIterator::CONSTRUCT_ARRAY,
             5242880,
             -1
-        );
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessageRegExp #^Expected integer for JSON decode options, got \"stdClass\".$#
-     */
-    public function testIteratorInvalidJsonDecodeOptionsType()
-    {
-        new BsonFileIterator(
-            $this->getAssetDir().'empty.bson',
-            BsonFileIterator::CONSTRUCT_ARRAY,
-            5242880,
-            10,
-            new \stdClass()
         );
     }
 

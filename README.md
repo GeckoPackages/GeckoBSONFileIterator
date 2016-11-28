@@ -10,7 +10,7 @@ The iterator can return the values it reads from the file by converting those in
 
 ### Requirements
 
-PHP 5.6 (PHP 7 supported). Optional HHVM support >= 3.12.
+PHP 7
 This package is framework agnostic.
 
 ### Install
