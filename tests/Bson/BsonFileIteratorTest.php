@@ -13,6 +13,8 @@ use GeckoPackages\Bson\BsonFileIterator;
 use GeckoPackages\PHPUnit\Asserts\RangeAssertTrait;
 
 /**
+ * @requires PHPUnit 5.2
+ *
  * @internal
  *
  * @author SpacePossum
@@ -191,68 +193,61 @@ final class BsonFileIteratorTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(0, $iterator);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessageRegExp #^Construct type must be any of integers \"1, 2, 3\" got \"777\".$#
-     */
     public function testIteratorInvalidConstructionValueInt()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageRegExp('#^Construct type must be any of integers \"1, 2, 3\" got \"777\".$#');
+
         new BsonFileIterator($this->getAssetDir().'test.bson', 777);
     }
 
-    /**
-     * @expectedException \UnexpectedValueException
-     * @expectedExceptionMessageRegExp #^Invalid data at item \#1, size 12435439 exceeds max. unpack size 372.$#
-     */
     public function testIteratorInvalidFileIsCorruptedBsonData()
     {
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessageRegExp('#^Invalid data at item \#1, size 12435439 exceeds max. unpack size 372.$#');
+
         $iterator = new BsonFileIterator($this->getAssetDir().'test.corrupt.bson');
         $this->assertCount(0, $iterator);  // not a real assert, but causes the iterator to real all
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessageRegExp #^directory\#\"/.*tests/Bson\" is not a file.$#
-     */
     public function testIteratorInvalidFileIsDir()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageRegExp('#^directory\#\"/.*tests/Bson\" is not a file.$#');
+
         new BsonFileIterator(__DIR__);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessageRegExp #^\"test123\" is not a file.$#
-     */
     public function testIteratorInvalidFileIsNotFound()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageRegExp('#^\"test123\" is not a file.$#');
+
         new BsonFileIterator('test123');
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessageRegExp #^integer\#\"1\" is not a file.$#
-     */
     public function testIteratorInvalidFileIsOtherType()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageRegExp('#^integer\#\"1\" is not a file.$#');
+
         new BsonFileIterator(1);
     }
 
-    /**
-     * @expectedException \UnexpectedValueException
-     * @expectedExceptionMessageRegExp #^Invalid data at item \#1, size 1633771873 exceeds max. unpack size 4.$#
-     */
     public function testIteratorInvalidFileIsSmall()
     {
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessageRegExp('#^Invalid data at item \#1, size 1633771873 exceeds max. unpack size 4.$#');
+
         $iterator = new BsonFileIterator($this->getAssetDir().'small.bson');
         $this->assertCount(0, $iterator);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessageRegExp #^Expected integer > 0 for JSON decode max depth, got \"integer\#-1\".$#
-     */
     public function testIteratorInvalidJsonDecodeMaxDepthValue()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageRegExp('#^Expected integer > 0 for JSON decode max depth, got \"integer\#-1\".$#');
+
         new BsonFileIterator(
             $this->getAssetDir().'empty.bson',
             BsonFileIterator::CONSTRUCT_ARRAY,
@@ -261,12 +256,11 @@ final class BsonFileIteratorTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessageRegExp #^Expected integer > 0 for max. unpack size, got \"integer\#-1\".$#
-     */
     public function testIteratorInvalidMaxUnpackSizeValue()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageRegExp('#^Expected integer > 0 for max. unpack size, got \"integer\#-1\".$#');
+
         new BsonFileIterator(__FILE__, 1, -1);
     }
 
@@ -274,12 +268,12 @@ final class BsonFileIteratorTest extends \PHPUnit_Framework_TestCase
      * @param int $constructType
      *
      * @dataProvider provideIteratorMaxDepthReached
-     *
-     * @expectedException \UnexpectedValueException
-     * @expectedExceptionMessageRegExp #^Invalid JSON \"Maximum stack depth exceeded\" at item \#1.$#
      */
     public function testIteratorMaxDepthReached($constructType)
     {
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessageRegExp('#^Invalid JSON \"Maximum stack depth exceeded\" at item \#1.$#');
+
         $cases = $this->provideIteratorCases();
         $case = reset($cases);
         $iterator = new BsonFileIterator(
