@@ -92,7 +92,7 @@ final class BsonFileIteratorTest extends \PHPUnit_Framework_TestCase
         $iterator->__destruct();
     }
 
-    public function provideIteratorCases()
+    public function provideIteratorCases(): array
     {
         $assertDir = $this->getAssetDir();
 
@@ -288,12 +288,12 @@ final class BsonFileIteratorTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(0, $iterator); // not a real assert, but causes the iterator to real all
     }
 
-    public function provideIteratorMaxDepthReached()
+    public function provideIteratorMaxDepthReached(): array
     {
         return [[BsonFileIterator::CONSTRUCT_ARRAY], [BsonFileIterator::CONSTRUCT_STD]];
     }
 
-    private function getAssetDir()
+    private function getAssetDir(): string
     {
         return \realpath(__DIR__.'/../assets').'/';
     }
