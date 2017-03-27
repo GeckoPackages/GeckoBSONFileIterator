@@ -21,15 +21,18 @@ services:
     - mongodb
 
 before_install:
+    - phpenv config-rm xdebug.ini || return 0
     - INI_FILE=$(echo "<?php echo get_cfg_var('cfg_file_path');"|php);
     - echo $INI_FILE;
     - echo extension=mongodb.so >> $INI_FILE;
 
 install:
     - composer update $COMPOSER_FLAGS --no-interaction -v
-    - if [[ $TRAVIS_PHP_VERSION = 7.0 ]]; then curl -L https://github.com/FriendsOfPHP/PHP-CS-Fixer/releases/download/v2.0.0/php-cs-fixer.phar -o php-cs-fixer.phar; fi
+    - composer info -D | sort
+    - if [[ $TRAVIS_PHP_VERSION = 7.1 ]]; then curl -L https://github.com/FriendsOfPHP/PHP-CS-Fixer/releases/download/v2.1.2/php-cs-fixer.phar -o php-cs-fixer.phar; fi
 
 script:
     - phpunit --verbose
     - phpenv config-rm xdebug.ini || return 0
-    - if [[ $TRAVIS_PHP_VERSION = 7.0 ]]; then php php-cs-fixer.phar --dry-run --diff -vvv fix; fi
+    - if [[ $TRAVIS_PHP_VERSION = 7.1 ]]; then php php-cs-fixer.phar --dry-run --diff -vvv fix; fi
+    - if [ $TASK_SCA == 1 ]; then files_with_trailing_spaces=`find . -type f -not -path "./.git/*" -not -path "./vendor/*" -not -path "./tests/assets/*" -exec egrep -nH " $" {} \;` && [[ $files_with_trailing_spaces ]] && echo $files_with_trailing_spaces || echo "No trailing spaces detected."; fi
