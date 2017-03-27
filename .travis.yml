@@ -21,7 +21,6 @@ services:
     - mongodb
 
 before_install:
-    - phpenv config-rm xdebug.ini || return 0
     - INI_FILE=$(echo "<?php echo get_cfg_var('cfg_file_path');"|php);
     - echo $INI_FILE;
     - echo extension=mongodb.so >> $INI_FILE;
