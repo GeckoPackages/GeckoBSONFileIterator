@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the GeckoPackages.
  *
@@ -37,25 +39,25 @@ final class BsonFileIteratorTest extends \PHPUnit_Framework_TestCase
         foreach ($iterator as $index => $item) {
             $this->assertUnsignedInt($index);
 
-            if (is_string($item) && BsonFileIterator::CONSTRUCT_JSON === $constructType) {
-                $item = json_decode($item, true);
+            if (\is_string($item) && BsonFileIterator::CONSTRUCT_JSON === $constructType) {
+                $item = \json_decode($item, true);
                 foreach ($item as $p => $v) {
-                    if (is_float($v)) {
-                        $item[$p] = round($v, 5);
+                    if (\is_float($v)) {
+                        $item[$p] = \round($v, 5);
                     }
                 }
 
-                $item = json_encode($item, JSON_PRETTY_PRINT);
-            } elseif (is_array($item) && BsonFileIterator::CONSTRUCT_ARRAY === $constructType) {
+                $item = \json_encode($item, JSON_PRETTY_PRINT);
+            } elseif (\is_array($item) && BsonFileIterator::CONSTRUCT_ARRAY === $constructType) {
                 foreach ($item as $p => $v) {
-                    if (is_float($v)) {
-                        $item[$p] = round($v, 5);
+                    if (\is_float($v)) {
+                        $item[$p] = \round($v, 5);
                     }
                 }
             } elseif ($item instanceof \stdClass && BsonFileIterator::CONSTRUCT_STD === $constructType) {
                 foreach ($item as $p => $v) {
-                    if (is_float($v)) {
-                        $item->$p = round($v, 5);
+                    if (\is_float($v)) {
+                        $item->$p = \round($v, 5);
                     }
                 }
             }
@@ -64,9 +66,9 @@ final class BsonFileIteratorTest extends \PHPUnit_Framework_TestCase
         }
 
         if (BsonFileIterator::CONSTRUCT_STD === $constructType) {
-            $this->assertCount(count($expected), $expected);
+            $this->assertCount(\count($expected), $expected);
             $this->assertContainsOnlyInstancesOf(\stdClass::class, $expected);
-            for ($i = 0, $count = count($expected); $i < $count; ++$i) {
+            for ($i = 0, $count = \count($expected); $i < $count; ++$i) {
                 $expect = $expected[$i];
                 $actual = $unWinded[$i];
                 foreach ($expect as $key => $value) {
@@ -90,7 +92,7 @@ final class BsonFileIteratorTest extends \PHPUnit_Framework_TestCase
         $iterator->__destruct();
     }
 
-    public function provideIteratorCases()
+    public function provideIteratorCases(): array
     {
         $assertDir = $this->getAssetDir();
 
@@ -117,9 +119,9 @@ final class BsonFileIteratorTest extends \PHPUnit_Framework_TestCase
                         'e' => [],
                         'f' => 'abc',
                         'g' => PHP_INT_MAX,
-                        'h' => round(-1.11111111, 5),
+                        'h' => \round(-1.11111111, 5),
                         'i' => PHP_INT_MIN,
-                        'j' => round(1.11111111, 5),
+                        'j' => \round(1.11111111, 5),
                         'k' => 0,
                         'l' => [
                             1, 2, 3,
@@ -134,9 +136,9 @@ final class BsonFileIteratorTest extends \PHPUnit_Framework_TestCase
                         'e' => [],
                         'f' => 'abc',
                         'g' => PHP_INT_MAX,
-                        'h' => round(-1.11111111, 5),
+                        'h' => \round(-1.11111111, 5),
                         'i' => PHP_INT_MIN,
-                        'j' => round(1.11111111, 5),
+                        'j' => \round(1.11111111, 5),
                         'k' => 0,
                         'l' => [
                             1, 2, 3,
@@ -152,7 +154,7 @@ final class BsonFileIteratorTest extends \PHPUnit_Framework_TestCase
             $case = $cases[$index];
             $expected = [];
             foreach ($case[2] as $j => $expect) {
-                $expected[$j] = json_encode($expect, JSON_PRETTY_PRINT);
+                $expected[$j] = \json_encode($expect, JSON_PRETTY_PRINT);
             }
 
             $cases['json test.bson'] = [
@@ -183,7 +185,7 @@ final class BsonFileIteratorTest extends \PHPUnit_Framework_TestCase
     public function testIteratorSplFile()
     {
         $cases = $this->provideIteratorCases();
-        $case = reset($cases);
+        $case = \reset($cases);
         $this->testIterator(new \SplFileInfo($case[0]), $case[1], $case[2]);
     }
 
@@ -275,7 +277,7 @@ final class BsonFileIteratorTest extends \PHPUnit_Framework_TestCase
         $this->expectExceptionMessageRegExp('#^Invalid JSON \"Maximum stack depth exceeded\" at item \#1.$#');
 
         $cases = $this->provideIteratorCases();
-        $case = reset($cases);
+        $case = \reset($cases);
         $iterator = new BsonFileIterator(
             $case[0],
             $constructType,
@@ -286,13 +288,13 @@ final class BsonFileIteratorTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(0, $iterator); // not a real assert, but causes the iterator to real all
     }
 
-    public function provideIteratorMaxDepthReached()
+    public function provideIteratorMaxDepthReached(): array
     {
         return [[BsonFileIterator::CONSTRUCT_ARRAY], [BsonFileIterator::CONSTRUCT_STD]];
     }
 
-    private function getAssetDir()
+    private function getAssetDir(): string
     {
-        return realpath(__DIR__.'/../assets').'/';
+        return \realpath(__DIR__.'/../assets').'/';
     }
 }
