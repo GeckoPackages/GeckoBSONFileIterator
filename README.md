@@ -2,7 +2,7 @@
 
 # BSON file iterator
 
-Iterator for [BSON files](https://en.wikipedia.org/wiki/BSON), for example as produced by [mongodump](https://docs.mongodb.com/manual/reference/program/mongodump/).
+Iterator for [BSON](https://en.wikipedia.org/wiki/BSON) files, for example as produced by [mongodump](https://docs.mongodb.com/manual/reference/program/mongodump/).
 The iterator can return the values it reads from the file by converting those into:
 - *string*s with JSON encoded data
 - associative *array*s
@@ -78,12 +78,15 @@ The project is released under the MIT license, see the LICENSE file.
 
 ### Contributions
 
-Contributions are welcome!
+Contributions are welcome!<br/>
+Visit us on [github :octocat:](https://github.com/GeckoPackages/GeckoBSONFileIterator)
 
 ### Semantic Versioning
 
 This project follows [Semantic Versioning](http://semver.org/).
 
 <sub>Kindly note:
-We do not keep a backwards compatible promise on the tests and tooling (such as document generation) of the project itself
-nor the content and/or format of exception messages.</sub>
+We do not keep a backwards compatible promise on code annotated with `@internal`, the tests and tooling (such as document generation) of the project itself
+nor the content and/or format of exception/error messages.</sub>
+
+This project is maintained on [github :octocat:](https://github.com/GeckoPackages/GeckoBSONFileIterator)
