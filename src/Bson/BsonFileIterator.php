@@ -78,7 +78,7 @@ final class BsonFileIterator implements \Iterator
 
     public function __destruct()
     {
-        @fclose($this->fileHandle); // best effort
+        @\fclose($this->fileHandle); // best effort
     }
 
     /**
@@ -112,26 +112,26 @@ final class BsonFileIterator implements \Iterator
      */
     public function next()
     {
-        $this->content = fread($this->fileHandle, 4);
-        if (feof($this->fileHandle)) {
+        $this->content = \fread($this->fileHandle, 4);
+        if (\feof($this->fileHandle)) {
             $this->content = false;
 
             return;
         }
 
-        fseek($this->fileHandle, -4, SEEK_CUR);
-        $this->content = unpack('V', $this->content);
-        $length = array_shift($this->content);
+        \fseek($this->fileHandle, -4, SEEK_CUR);
+        $this->content = \unpack('V', $this->content);
+        $length = \array_shift($this->content);
 
         if ($length > $this->maxUnpackSize) {
-            throw new \UnexpectedValueException(sprintf(
+            throw new \UnexpectedValueException(\sprintf(
                 'Invalid data at item #%d, size %d exceeds max. unpack size %d.',
                 1 + $this->key, $length, $this->maxUnpackSize
             ));
         }
 
         $decoder = $this->decoder;
-        $this->content = $decoder($this->key, \MongoDB\BSON\toJSON(fread($this->fileHandle, $length)));
+        $this->content = $decoder($this->key, \MongoDB\BSON\toJSON(\fread($this->fileHandle, $length)));
 
         ++$this->key;
     }
@@ -141,7 +141,7 @@ final class BsonFileIterator implements \Iterator
      */
     public function rewind()
     {
-        fseek($this->fileHandle, 0);
+        \fseek($this->fileHandle, 0);
         $this->next(); // implicit sets `$this->content`
         $this->key = 0;
     }
@@ -158,25 +158,25 @@ final class BsonFileIterator implements \Iterator
     {
         if ($file instanceof \SplFileInfo) {
             $file = $file->getPathname();
-        } elseif (!is_string($file)) {
-            throw new \InvalidArgumentException(sprintf(
+        } elseif (!\is_string($file)) {
+            throw new \InvalidArgumentException(\sprintf(
                 '%s is not a file.',
-                is_object($file) ? get_class($file) : gettype($file).(is_resource($file) ? '' : '#"'.$file.'"')
+                \is_object($file) ? \get_class($file) : \gettype($file).(\is_resource($file) ? '' : '#"'.$file.'"')
             ));
         }
 
-        if (!is_file($file)) {
-            throw new \InvalidArgumentException(sprintf('%s is not a file.', is_dir($file) ? 'directory#"'.$file.'"' : '"'.$file.'"'));
+        if (!\is_file($file)) {
+            throw new \InvalidArgumentException(\sprintf('%s is not a file.', \is_dir($file) ? 'directory#"'.$file.'"' : '"'.$file.'"'));
         }
 
-        if (!is_readable($file)) {
-            throw new \InvalidArgumentException(sprintf('file "%s" is not readable.', $file));
+        if (!\is_readable($file)) {
+            throw new \InvalidArgumentException(\sprintf('file "%s" is not readable.', $file));
         }
 
-        $fileHandle = @fopen($file, 'rb');
+        $fileHandle = @\fopen($file, 'rb');
         if (false === $fileHandle) {
-            $error = error_get_last();
-            throw new \RuntimeException(sprintf(
+            $error = \error_get_last();
+            throw new \RuntimeException(\sprintf(
                 'Failed to open file "%s" for reading.%s',
                 $file, null === $error ? '' : ' '.$error['message']
             ));
@@ -203,23 +203,23 @@ final class BsonFileIterator implements \Iterator
 
                 break;
             default:
-                throw new \InvalidArgumentException(sprintf(
+                throw new \InvalidArgumentException(\sprintf(
                     'Construct type must be any of integers "%s" got "%d".',
-                    implode(', ', [self::CONSTRUCT_JSON, self::CONSTRUCT_ARRAY, self::CONSTRUCT_STD]), $constructType
+                    \implode(', ', [self::CONSTRUCT_JSON, self::CONSTRUCT_ARRAY, self::CONSTRUCT_STD]), $constructType
                 ));
         }
 
         if ($jsonDecodeMaxDepth < 1) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new \InvalidArgumentException(\sprintf(
                 'Expected integer > 0 for JSON decode max depth, got "%s".',
-                is_object($jsonDecodeMaxDepth) ? get_class($jsonDecodeMaxDepth) : gettype($jsonDecodeMaxDepth).(is_resource($jsonDecodeMaxDepth) ? '' : '#'.$jsonDecodeMaxDepth)
+                \is_object($jsonDecodeMaxDepth) ? \get_class($jsonDecodeMaxDepth) : \gettype($jsonDecodeMaxDepth).(\is_resource($jsonDecodeMaxDepth) ? '' : '#'.$jsonDecodeMaxDepth)
             ));
         }
 
         $this->decoder = function ($key, $content) use ($assoc, $jsonDecodeMaxDepth, $jsonDecodeOptions) {
-            $content = @json_decode($content, $assoc, $jsonDecodeMaxDepth, $jsonDecodeOptions);
+            $content = @\json_decode($content, $assoc, $jsonDecodeMaxDepth, $jsonDecodeOptions);
             if (null === $content) {
-                throw new \UnexpectedValueException(sprintf('Invalid JSON "%s" at item #%d.', json_last_error_msg(), 1 + $key));
+                throw new \UnexpectedValueException(\sprintf('Invalid JSON "%s" at item #%d.', \json_last_error_msg(), 1 + $key));
             }
 
             return $content;
@@ -235,12 +235,12 @@ final class BsonFileIterator implements \Iterator
     private function resolveMaxUnpackSize(int $maxUnpackSize, string $file)
     {
         if ($maxUnpackSize <= 0) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new \InvalidArgumentException(\sprintf(
                 'Expected integer > 0 for max. unpack size, got "%s".',
-                is_object($maxUnpackSize) ? get_class($maxUnpackSize) : gettype($maxUnpackSize).(is_resource($maxUnpackSize) ? '' : '#'.$maxUnpackSize)
+                \is_object($maxUnpackSize) ? \get_class($maxUnpackSize) : \gettype($maxUnpackSize).(\is_resource($maxUnpackSize) ? '' : '#'.$maxUnpackSize)
             ));
         }
 
-        $this->maxUnpackSize = min($maxUnpackSize, filesize($file));
+        $this->maxUnpackSize = \min($maxUnpackSize, \filesize($file));
     }
 }
